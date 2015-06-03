@@ -144,6 +144,7 @@ In this example, the previous file for ``project_b`` is equivalent to:
 will appear before ``B``, or, an alias defined in ``A`` will be overridden by an alias with the
 same name in ``B``).
 
+
 ``environment.yml`` examples
 ----------------------------
 
@@ -183,8 +184,8 @@ Environment/aliases
     #   current PATH: "/usr/local/bin:/usr/bin"
     #   new     PATH: "{{ root }}/bin:/usr/local/bin:/usr/bin"
     environment:
-      ORACLE_HOME: /usr/local/oracle_instantclient
-      PATH:
+      - ORACLE_HOME: /usr/local/oracle_instantclient
+      - PATH:
         - {{ root }}/bin
 
     aliases:
