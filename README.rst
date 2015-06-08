@@ -109,6 +109,41 @@ following variables:
 - ``os``: Python's ``os`` module.
 
 
+Including other ``environment.yml`` files
+-----------------------------------------
+
+You can use an ``includes`` tag to include content from other ``environment.yml`` files.
+
+This tag is a list of paths to other environment files:
+
+.. code-block:: yaml
+
+    name: project_a
+    dependencies:
+      - pytest
+
+.. code-block:: yaml
+
+    name: project_b
+    dependencies:
+      - pytest-xunit
+    includes:
+      - {{ root }}/project_a
+
+In this example, the previous file for ``project_b`` is equivalent to:
+
+.. code-block:: yaml
+
+    name: project_b
+    dependencies:
+      - pytest
+      - pytest-xunit
+
+
+``conda-env`` will always try to maintain a proper dependency order (e.g. PATHs defined in ``A``
+will appear before ``B``, or, an alias defined in ``A`` will be overridden by an alias with the
+same name in ``B``).
+
 ``environment.yml`` examples
 ----------------------------
 
