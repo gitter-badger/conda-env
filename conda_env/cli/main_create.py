@@ -1,12 +1,14 @@
 from __future__ import print_function
 from argparse import RawDescriptionHelpFormatter
 import os
-import textwrap
 import sys
+import textwrap
 
 from conda.cli import common
 from conda.cli import install as cli_install
+from conda.install import rm_rf
 from conda.misc import touch_nonadmin
+from conda.plan import is_root_prefix
 
 from ..installers.base import get_installer, InvalidInstaller
 from .. import exceptions
@@ -51,6 +53,11 @@ def configure_parser(sub_parsers):
         default=False,
     )
     p.add_argument(
+        '--force',
+        action='store_true',
+        default=False,
+    )
+    p.add_argument(
         'name',
         help='environment definition',
         action='store',
@@ -80,6 +87,8 @@ def execute(args, parser):
         common.error_and_exit(str(e), json=args.json)
 
     prefix = common.get_prefix(args, search=False)
+    if args.force and not is_root_prefix(prefix) and os.path.exists(prefix):
+        rm_rf(prefix)
     cli_install.check_prefix(prefix, json=args.json)
 
     # TODO, add capability
