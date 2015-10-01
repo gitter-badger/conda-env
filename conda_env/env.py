@@ -89,7 +89,7 @@ def from_yaml(yamlstr, **kwargs):
 def from_file(filename, **kwargs):
     if not os.path.exists(filename):
         raise exceptions.EnvironmentFileNotFound(filename)
-    with open(filename, 'rb') as fp:
+    with open(filename) as fp:
         return from_yaml(fp.read(), filename=os.path.abspath(filename), **kwargs)
 
 
@@ -108,9 +108,8 @@ class Dependencies(OrderedDict):
 
         for line in self.raw:
             if type(line) is dict:
-                installer = line.keys()[0]
-                dependencies = line[installer]
-                self[installer] = self.get(installer, []) + dependencies
+                for installer, dependencies in line.items():
+                    self[installer] = self.get(installer, []) + dependencies
             else:
                 self['conda'].append(common.arg2spec(line))
 
