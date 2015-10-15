@@ -1,7 +1,8 @@
 from __future__ import print_function
-
+from .print_env import print_env
 import os
 import sys
+
 
 
 def write_activate_deactivate(env, prefix):
@@ -24,33 +25,13 @@ def write_activate_deactivate(env, prefix):
         os.path.join(conda_dir, 'print_env.py'),
     )
 
-    # Create activate and deactivate scripts
     if sys.platform == 'win32':
         ext = '.bat'
-        source = 'call'
-        rm = 'del'
-        set_temp_file = '''set TEMP_FILE=\nfor /f "delims=" %%%%A in ('%s') do @set TEMP_FILE=%%%%A'''
-        temp_file = '%TEMP_FILE%'
     else:
         ext = '.sh'
-        source = 'source'
-        rm = 'rm'
-        set_temp_file = 'TEMP_FILE=`%s`'
-        temp_file = '$TEMP_FILE'
-
-    python_create_temp_file = 'python -c "import tempfile; print(tempfile.mkstemp(suffix=\\"%s\\")[1])"' % ext
-    set_temp_file = set_temp_file % python_create_temp_file
 
     with open(os.path.join(activate_dir, '_activate' + ext), 'w') as activate:
-        activate.write('%s\n' % set_temp_file)
-        activate.write('python "%s" activate "%s" "%s" > %s\n' % \
-            (os.path.join(conda_dir, 'print_env.py'), repr(env.environment), repr(env.aliases), temp_file))
-        activate.write(source + ' %s\n' % temp_file)
-        activate.write(rm + ' %s\n' % temp_file)
+        activate.write(print_env('activate', env.environment, env.aliases))
 
     with open(os.path.join(deactivate_dir, '_deactivate' + ext), 'w') as deactivate:
-        deactivate.write('%s\n' % set_temp_file)
-        deactivate.write('python "%s" deactivate "%s" "%s" > %s\n' % \
-            (os.path.join(conda_dir, 'print_env.py'), repr(env.environment), repr(env.aliases), temp_file))
-        deactivate.write(source + ' %s\n' % temp_file)
-        deactivate.write(rm + ' %s\n' % temp_file)
+        deactivate.write(print_env('deactivate', env.environment, env.aliases))

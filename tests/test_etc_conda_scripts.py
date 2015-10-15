@@ -31,22 +31,18 @@ class activate_deactivate_TestCase(unittest.TestCase):
             with open(os.path.join(self._PREFIX, 'etc', 'conda', 'activate.d', '_activate.sh')) as activate:
                 self.assertEqual(activate.read(), textwrap.dedent(
                     '''
-                    TEMP_FILE=`python -c "import tempfile; print(tempfile.mkstemp(suffix=\\".sh\\")[1])"`
-                    python "%s" activate "[{'FOO': 'BAR'}]" "{'my_ls': 'ls -la'}" > $TEMP_FILE
-                    source $TEMP_FILE
-                    rm $TEMP_FILE
+                    export FOO="BAR"
+                    alias my_ls="ls -la"
                     '''
-                ).lstrip() % self._OBTAINED_PRINT_ENV)
+                ).lstrip())
 
             with open(os.path.join(self._PREFIX, 'etc', 'conda', 'deactivate.d', '_deactivate.sh')) as deactivate:
                 self.assertEqual(deactivate.read(), textwrap.dedent(
                     '''
-                    TEMP_FILE=`python -c "import tempfile; print(tempfile.mkstemp(suffix=\\".sh\\")[1])"`
-                    python "%s" deactivate "[{'FOO': 'BAR'}]" "{'my_ls': 'ls -la'}" > $TEMP_FILE
-                    source $TEMP_FILE
-                    rm $TEMP_FILE
+                    unset FOO
+                    [ `alias | grep my_ls= | wc -l` != 0 ] && unalias my_ls
                     '''
-                ).lstrip() % self._OBTAINED_PRINT_ENV)
+                ).lstrip())
 
             with open(self._OBTAINED_PRINT_ENV) as obtained_print_env:
                 with open(self._EXPECTED_PRINT_ENV) as expected_print_env:

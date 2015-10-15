@@ -3,10 +3,10 @@
 Supports:
   * bash
   * cmd.exe (windows default shell)
-  * tcc.exe (windows https://jpsoft.com/take-command-windows-scripting.html)
 '''
 from __future__ import print_function
 import os
+import sys
 
 
 def print_env(action, environment=[], aliases={}):
@@ -26,9 +26,22 @@ def print_env(action, environment=[], aliases={}):
                 env[k] += v
             else:
                 env[k] = v
-    # TODO: Use a more robust shell detection.
+
     # Create environment configuration functions
-    if shell == 'bash':
+    if sys.platform == 'win32':
+        def Export(name, value):
+            if isinstance(value, list):
+                value = pathsep.join(value)
+                return 'set %(name)s=%(value)s%(pathsep)s%%%(name)s%%\n' % locals()
+            else:
+                return 'set %(name)s=%(value)s\n' % locals()
+        def Unset(name):
+            return 'set %(name)s=\n' % locals()
+        def Alias(name, value):
+            return 'doskey %(name)s=%(value)s\n' % locals()
+        def Unalias(name):
+            return 'doskey %(name)s=\n' % locals()
+    else:
         def Export(name, value):
             if isinstance(value, list):
                 value = pathsep.join(value)
@@ -42,42 +55,6 @@ def print_env(action, environment=[], aliases={}):
         def Unalias(name):
             return '[ `alias | grep %(name)s= | wc -l` != 0 ] && unalias %(name)s\n' % locals()
 
-    elif 'cmd.exe' in shell:
-        def Export(name, value):
-            if isinstance(value, list):
-                value = pathsep.join(value)
-                return 'set %(name)s=%(value)s%(pathsep)s%%%(name)s%%\n' % locals()
-            else:
-                return 'set %(name)s=%(value)s\n' % locals()
-        def Unset(name):
-            return 'set %(name)s=\n' % locals()
-        def Alias(name, value):
-            return 'doskey %(name)s=%(value)s\n' % locals()
-        def Unalias(name):
-            return 'doskey %(name)s=\n' % locals()
-
-    elif 'tcc.exe' in shell:
-        def Export(name, value):
-            if isinstance(value, list):
-                value = pathsep.join(value)
-                return 'set %(name)s=%(value)s%(pathsep)s%%%(name)s%%\n' % locals()
-            else:
-                return 'set %(name)s=%(value)s\n' % locals()
-        def Unset(name):
-            return 'set %(name)s=\n' % locals()
-        def Alias(name, value):
-            return 'alias %(name)s %(value)s\n' % locals()
-        def Unalias(name):
-            return 'unalias %(name)s\n' % locals()
-
-    else:
-        error_msg = [
-            'Could not determine shell from environment variables {SHELL, COMSPEC}',
-            'This is an unknown shell: %(shell)s' % locals(),
-        ]
-        raise RuntimeError('\n'.join(error_msg))
-
-
     # Activate/Deactivate
     if action == 'activate':
         s = ''
@@ -90,10 +67,10 @@ def print_env(action, environment=[], aliases={}):
     elif action == 'deactivate':
         s = ''
         for k, v in sorted(env.items()):
-            if k not in os.environ:
-                continue
 
             if isinstance(v, list):
+                if k not in os.environ:
+                    continue
                 current_value = os.environ[k].split(os.pathsep)
                 current_value = [c for c in current_value if c != '']
                 for path in v:
@@ -111,8 +88,6 @@ def print_env(action, environment=[], aliases={}):
 
 
 if __name__ == '__main__':
-    import sys
-
     action = sys.argv[1]
     environment = eval(sys.argv[2])
     aliases = eval(sys.argv[3])
