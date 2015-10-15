@@ -67,10 +67,11 @@ def print_env(action, environment=[], aliases={}):
     elif action == 'deactivate':
         s = ''
         for k, v in sorted(env.items()):
+            if k not in os.environ:
+                s += Unset(k)
+                continue
 
             if isinstance(v, list):
-                if k not in os.environ:
-                    continue
                 current_value = os.environ[k].split(os.pathsep)
                 current_value = [c for c in current_value if c != '']
                 for path in v:
