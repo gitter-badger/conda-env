@@ -57,12 +57,13 @@ class InvalidLoader(Exception):
         super(InvalidLoader, self).__init__(msg)
 
 
-class IPythonNotInstalled(CondaEnvRuntimeError):
+class NBFormatNotInstalled(CondaEnvRuntimeError):
     def __init__(self):
-        msg = """IPython notebook is not installed. Install it with:
-        conda install ipython-noteboook
+        msg = """nbformat is not installed. Install it with:
+        conda install nbformat
         """
-        super(IPythonNotInstalled, self).__init__(msg)
+        super(NBFormatNotInstalled, self).__init__(msg)
+
 
 # TODO: This is copied from conda_build. Could yaml parsing from both libraries
 # be merged instead of duplicated? This could include jinja2 and "# [unix]" flags.

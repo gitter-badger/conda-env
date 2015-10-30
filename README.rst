@@ -79,22 +79,8 @@ in your local package cache.
 You can explicitly provide an environment spec file using ``-f`` or ``--file``
 and the name of the file you would like to use.
 
-
-``environment.yml`` examples
-----------------------------
-
-Name and dependencies
-^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: yaml
-
-    name: stats
-    dependencies:
-      - numpy
-      - pandas
-
-Name and version specific dependencies
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Environment file example
+------------------------
 
 .. code-block:: yaml
 
