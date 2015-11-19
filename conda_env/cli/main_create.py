@@ -25,6 +25,7 @@ examples:
     conda env create -n name
     conda env create vader/deathstar
     conda env create -f=/path/to/environment.yml
+    conda env create -f=/path/to/requirements.txt -n deathstar
 """
 
 
@@ -51,7 +52,7 @@ def configure_parser(sub_parsers):
     )
     p.add_argument(
         '-q', '--quiet',
-        action='store_false',
+        action='store_true',
         default=False,
     )
     p.add_argument(
