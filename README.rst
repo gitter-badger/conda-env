@@ -189,3 +189,8 @@ In this example, the previous file for ``project_b`` is equivalent to:
 ``conda-env`` will always try to maintain a proper dependency order (e.g. PATHs defined in ``A``
 will appear before ``B``, or, an alias defined in ``A`` will be overridden by an alias with the
 same name in ``B``).
+
+
+.. image:: https://badges.gitter.im/ESSS/conda-env.svg
+   :alt: Join the chat at https://gitter.im/ESSS/conda-env
+   :target: https://gitter.im/ESSS/conda-env?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
